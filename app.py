@@ -77,7 +77,7 @@ else:
   st.write(f"Mostrando **{len(productos)}** productos disponibles.")
   st.divider()
 
-  # Mantenemos las 8 columnas estables en PC
+  # Mantenemos las 8 columnas en la PC
   NUMERO_COLUMNAS = 8
   columnas = st.columns(NUMERO_COLUMNAS)
 
@@ -96,16 +96,34 @@ else:
         else:
           st.info("📷")
 
-        # Textos compactos limpios
+        # Nombre recortado estrictamente para que no baje a otra línea
         nombre_corto = (
-            (nombre[:22] + "..")
-            if nombre and len(nombre) > 22
+            (nombre[:16] + "..")
+            if nombre and len(nombre) > 16
             else (nombre if nombre else "Sin nombre")
         )
-        st.markdown(f"**{nombre_corto}**")
+        st.markdown(
+            f"<div style='font-size:11px; font-weight:bold; white-space:nowrap;"
+            f" overflow:hidden; text-overflow:ellipsis;'"
+            f" title='{nombre}'>{nombre_corto}</div>",
+            unsafe_allow_html=True,
+        )
 
-        marca_texto = marca if marca else "S/M"
-        st.caption(f"Marca: {marca_texto}")
-        st.caption(f"Stock: {stock} unids.")
+        # Marca y stock juntos en una sola línea compacta
+        marca_texto = (
+            (marca[:7] + ".")
+            if marca and len(marca) > 7
+            else (marca if marca else "S/M")
+        )
+        st.markdown(
+            f"<div style='font-size:10px; color:#555;'>{marca_texto} | Stk:"
+            f" {stock}</div>",
+            unsafe_allow_html=True,
+        )
 
-        st.markdown(f"**💰 S/ {precio:.2f}**")
+        # Precio alineado
+        st.markdown(
+            f"<div style='font-size:12px; font-weight:bold; color:#550055;"
+            f" text-align:right;'>S/ {precio:.2f}</div>",
+            unsafe_allow_html=True,
+        )
