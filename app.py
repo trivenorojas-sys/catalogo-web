@@ -64,19 +64,19 @@ categoria_seleccionada = st.sidebar.selectbox("Filtrar por Categoría:", categor
 
 productos = cargar_catalogo(categoria_filtro=categoria_seleccionada, busqueda=busqueda_texto)
 
-# Cabecera compacta aprovechando el ancho superior
-col_tit, col_cont = st.columns([4, 1])
+# Cabecera compacta con mejor proporción para que el contador de productos respire y no se corte
+col_tit, col_cont = st.columns([3, 2])
 with col_tit:
-    st.markdown("## 🛍️ Catálogo de Productos Disponibles")
+    st.markdown("## 🛍️ Catálogo de Productos")
 with col_cont:
-    st.markdown(f"<div style='text-align: right; padding-top: 10px; color: #555; font-weight: bold;'>📦 {len(productos)} productos</div>", unsafe_allow_html=True)
+    st.markdown(f"<div style='text-align: right; padding-top: 15px; color: #555; font-weight: bold;'>📦 {len(productos)} productos</div>", unsafe_allow_html=True)
 
 st.markdown("<hr style='margin: 0px 0px 15px 0px;'>", unsafe_allow_html=True)
 
 if not productos:
     st.warning("No se encontraron productos que coincidan con tu búsqueda.")
 else:
-    # Mantenemos las 6 columnas por fila que dan espacio perfecto a los nombres
+    # Mantenemos las 6 columnas por fila
     NUMERO_COLUMNAS = 6
     columnas = st.columns(NUMERO_COLUMNAS)
     
@@ -95,13 +95,10 @@ else:
                 else:
                     st.info("📷")
                 
-                # Nombre completo en 2 líneas si es necesario
                 nombre_texto = nombre if nombre else "Sin nombre"
                 st.markdown(f"<div style='font-size:11px; font-weight:bold; line-height:1.2; height:28px; overflow:hidden;' title='{nombre_texto}'>{nombre_texto}</div>", unsafe_allow_html=True)
                 
-                # Marca y stock juntos
                 marca_texto = marca if marca else 'S/M'
                 st.markdown(f"<div style='font-size:10px; color:#555;'>Marca: {marca_texto} | Stk: {stock}</div>", unsafe_allow_html=True)
                 
-                # Precio
                 st.markdown(f"<div style='font-size:12px; font-weight:bold; color:#550055; text-align:right;'>S/ {precio:.2f}</div>", unsafe_allow_html=True)
