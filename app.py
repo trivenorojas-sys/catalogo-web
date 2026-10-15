@@ -18,10 +18,52 @@ st.write(
 
 def conectar_db():
   conn = sqlite3.connect("inventario.db")
+  conn.execute("PRAGMA foreign_keys = ON")
   return conn
 
 
-@st.cache_data(ttl=60)
+# Inicializar y verificar la tabla automáticamente para evitar errores
+def inicializar_db():
+  try:
+    with conectar_db() as conn:
+      cur = conn.cursor()
+      cur.execute("""
+                CREATE TABLE IF NOT EXISTS productos (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    codigo TEXT UNIQUE NOT NULL,
+                    nombre TEXT NOT NULL,
+                    marca TEXT DEFAULT '',
+                    categoria TEXT DEFAULT '',
+                    ubicacion TEXT DEFAULT '',
+                    detalles TEXT DEFAULT '',
+                    unidad TEXT DEFAULT 'unidad',
+                    costo REAL DEFAULT 0,
+                    precio REAL DEFAULT 0,
+                    stock INTEGER DEFAULT 0,
+                    stock_minimo INTEGER DEFAULT 0,
+                    activo INTEGER DEFAULT 1,
+                    fecha_creacion TEXT,
+                    imagen BLOB
+                )
+            """)
+      cur.execute("PRAGMA table_info(productos)")
+      columnas = [col[1] for col in cur.fetchall()]
+      if "activo" not in columnas:
+        cur.execute("ALTER TABLE productos ADD COLUMN activo INTEGER DEFAULT 1")
+      if "marca" not in columnas:
+        cur.execute("ALTER TABLE productos ADD COLUMN marca TEXT DEFAULT ''")
+      if "detalles" not in columnas:
+        cur.execute("ALTER TABLE productos ADD COLUMN detalles TEXT DEFAULT ''")
+      if "imagen" not in columnas:
+        cur.execute("ALTER TABLE productos ADD COLUMN imagen BLOB")
+  except Exception:
+    pass
+
+
+inicializar_db()
+
+
+@st.cache_data(ttl=10)
 def cargar_catalogo(categoria_filtro="Todas", busqueda=""):
   conn = conectar_db()
   cur = conn.cursor()
