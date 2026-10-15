@@ -77,8 +77,8 @@ else:
   st.write(f"Mostrando **{len(productos)}** productos disponibles.")
   st.divider()
 
-  # Mantenemos las 8 columnas en la PC
-  NUMERO_COLUMNAS = 8
+  # Configuramos exactamente 6 productos por fila para dar más espacio al texto
+  NUMERO_COLUMNAS = 6
   columnas = st.columns(NUMERO_COLUMNAS)
 
   for idx, p in enumerate(productos):
@@ -96,32 +96,23 @@ else:
         else:
           st.info("📷")
 
-        # Nombre recortado estrictamente para que no baje a otra línea
-        nombre_corto = (
-            (nombre[:16] + "..")
-            if nombre and len(nombre) > 16
-            else (nombre if nombre else "Sin nombre")
-        )
+        # Nombre completo adaptado (permitiendo hasta dos líneas si es necesario sin cortar feo)
+        nombre_texto = nombre if nombre else "Sin nombre"
         st.markdown(
-            f"<div style='font-size:11px; font-weight:bold; white-space:nowrap;"
-            f" overflow:hidden; text-overflow:ellipsis;'"
-            f" title='{nombre}'>{nombre_corto}</div>",
+            f"<div style='font-size:11px; font-weight:bold; line-height:1.2;"
+            f" height:28px; overflow:hidden;' title='{nombre_texto}'>{nombre_texto}</div>",
             unsafe_allow_html=True,
         )
 
-        # Marca y stock juntos en una sola línea compacta
-        marca_texto = (
-            (marca[:7] + ".")
-            if marca and len(marca) > 7
-            else (marca if marca else "S/M")
-        )
+        # Marca y stock juntos en una línea
+        marca_texto = marca if marca else "S/M"
         st.markdown(
-            f"<div style='font-size:10px; color:#555;'>{marca_texto} | Stk:"
-            f" {stock}</div>",
+            f"<div style='font-size:10px; color:#555;'>Marca: {marca_texto} |"
+            f" Stk: {stock}</div>",
             unsafe_allow_html=True,
         )
 
-        # Precio alineado
+        # Precio destacado
         st.markdown(
             f"<div style='font-size:12px; font-weight:bold; color:#550055;"
             f" text-align:right;'>S/ {precio:.2f}</div>",
