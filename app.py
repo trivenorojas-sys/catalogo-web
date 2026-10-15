@@ -12,20 +12,6 @@ st.set_page_config(
 # Estilos CSS para replicar exactamente la vista de tu sistema de escritorio
 st.markdown("""
     <style>
-    .card-producto {
-        background-color: white;
-        border: 1px solid #e0e0e0;
-        border-radius: 4px;
-        padding: 8px;
-        margin-bottom: 10px;
-        font-family: Arial, sans-serif;
-        font-size: 11px;
-        color: #333;
-        height: 210px;
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-    }
     .card-nombre {
         font-weight: bold;
         font-size: 11px;
@@ -37,10 +23,12 @@ st.markdown("""
     }
     .card-marca {
         color: #0066cc;
+        font-size: 11px;
         margin-bottom: 2px;
     }
     .card-stock {
         color: #555;
+        font-size: 11px;
         margin-bottom: 4px;
     }
     .card-precio {
@@ -63,7 +51,6 @@ def cargar_catalogo(categoria_filtro="Todas", busqueda=""):
     try:
         conn = conectar_db()
         cur = conn.cursor()
-        # Añadimos stock a la consulta
         query = "SELECT codigo, nombre, marca, categoria, precio, stock, detalles, imagen FROM productos WHERE activo = 1"
         params = []
         
@@ -78,7 +65,8 @@ def cargar_catalogo(categoria_filtro="Todas", busqueda=""):
         query += " ORDER BY categoria, nombre ASC"
         cur.execute(query, params)
         resultados = cur.fetchall()
-        conn.close()        return resultados
+        conn.close()
+        return resultados
     except Exception:
         return []
 
@@ -106,7 +94,7 @@ else:
     st.write(f"Mostrando **{len(productos)}** productos disponibles.")
     st.divider()
 
-    # Mantenemos las 8 columnas por fila que pediste
+    # Mantenemos las 8 columnas por fila exactas
     NUMERO_COLUMNAS = 8
     columnas = st.columns(NUMERO_COLUMNAS)
     
@@ -116,7 +104,6 @@ else:
         
         with columna_actual:
             with st.container(border=True):
-                # Imagen miniatura
                 if imagen_blob:
                     try:
                         img = Image.open(io.BytesIO(imagen_blob))
@@ -126,7 +113,6 @@ else:
                 else:
                     st.info("📷")
                 
-                # Datos idénticos a tu software de escritorio
                 st.markdown(f"<div class='card-nombre' title='{nombre}'>{nombre}</div>", unsafe_allow_html=True)
                 
                 marca_texto = marca if marca else 'S/M'
