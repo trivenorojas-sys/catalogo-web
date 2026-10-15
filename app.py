@@ -77,21 +77,20 @@ else:
   st.write(f"Mostrando **{len(productos)}** productos disponibles.")
   st.divider()
 
-  columnas = st.columns(3)
+  # CAMBIO AQUÍ: Ponemos 4 columnas por fila (puedes cambiar el 4 por 5 si los quieres más compactos)
+  NUMERO_COLUMNAS = 4
+  columnas = st.columns(NUMERO_COLUMNAS)
+
   for idx, p in enumerate(productos):
     codigo, nombre, marca, categoria, precio, detalles, imagen_blob = p
-    columna_actual = columnas[idx % 3]
+    columna_actual = columnas[idx % NUMERO_COLUMNAS]
 
     with columna_actual:
       with st.container(border=True):
-        # Creamos subcolumnas internas para centrar y reducir la imagen visualmente
         if imagen_blob:
           try:
             img = Image.open(io.BytesIO(imagen_blob))
-            # Esto centra la imagen y deja espacio a los lados para que no ocupe todo el ancho de la tarjeta
-            col_img1, col_img2, col_img3 = st.columns([1, 4, 1])
-            with col_img2:
-              st.image(img, use_container_width=True)
+            st.image(img, use_container_width=True)
           except Exception:
             st.info("📷 [Sin imagen]")
         else:
