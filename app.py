@@ -77,8 +77,8 @@ else:
   st.write(f"Mostrando **{len(productos)}** productos disponibles.")
   st.divider()
 
-  # CAMBIO AQUÍ: Ponemos 4 columnas por fila (puedes cambiar el 4 por 5 si los quieres más compactos)
-  NUMERO_COLUMNAS = 4
+  # Configuramos exactamente 8 productos por fila
+  NUMERO_COLUMNAS = 8
   columnas = st.columns(NUMERO_COLUMNAS)
 
   for idx, p in enumerate(productos):
@@ -92,15 +92,15 @@ else:
             img = Image.open(io.BytesIO(imagen_blob))
             st.image(img, use_container_width=True)
           except Exception:
-            st.info("📷 [Sin imagen]")
+            st.info("📷")
         else:
-          st.info("📷 [Sin imagen]")
+          st.info("📷")
 
-        st.subheader(nombre)
+        # Letras y textos más compactos para que encajen bien en 8 columnas
+        st.markdown(f"**{nombre}**")
         st.caption(
-            f"**Marca:** {marca if marca else 'S/M'} | **Categoría:**"
-            f" {categoria if categoria else 'General'}"
+            f"Marca: {marca if marca else 'S/M'}\nCat: {categoria if categoria else 'Gral'}"
         )
         if detalles:
           st.text(detalles)
-        st.markdown(f"### 💰 S/ {precio:.2f}")
+        st.markdown(f"#### 💰 S/ {precio:.2f}")
