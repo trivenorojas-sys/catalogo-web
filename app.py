@@ -17,7 +17,6 @@ st.write(
 
 
 def conectar_db():
-  # Conectamos al archivo liviano que acabas de subir
   return sqlite3.connect("inventario_web.db")
 
 
@@ -85,14 +84,18 @@ else:
 
     with columna_actual:
       with st.container(border=True):
+        # Creamos subcolumnas internas para centrar y reducir la imagen visualmente
         if imagen_blob:
           try:
             img = Image.open(io.BytesIO(imagen_blob))
-            st.image(img, use_container_width=True)
+            # Esto centra la imagen y deja espacio a los lados para que no ocupe todo el ancho de la tarjeta
+            col_img1, col_img2, col_img3 = st.columns([1, 4, 1])
+            with col_img2:
+              st.image(img, use_container_width=True)
           except Exception:
-            st.info("📷 [Catálogo Bazar]")
+            st.info("📷 [Sin imagen]")
         else:
-          st.info("📷 [Catálogo Bazar]")
+          st.info("📷 [Sin imagen]")
 
         st.subheader(nombre)
         st.caption(
