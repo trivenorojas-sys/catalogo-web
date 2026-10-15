@@ -1,81 +1,12 @@
-import base64
+import io
 import sqlite3
 import streamlit as st
+from PIL import Image
 
 st.set_page_config(
     page_title="Catálogo de Productos - Librería y Bazar",
     page_icon="🛍️",
     layout="wide",
-)
-
-# Estilos CSS con cuadrícula adaptable automática para PC y Celulares
-st.markdown(
-    """
-    <style>
-    .grid-catalogo {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
-        gap: 10px;
-        margin-bottom: 20px;
-    }
-    .card-producto {
-        background-color: white;
-        border: 1px solid #e0e0e0;
-        border-radius: 6px;
-        padding: 8px;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-        text-align: left;
-    }
-    .card-img-container {
-        width: 100%;
-        height: 110px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background: #f9f9f9;
-        border-radius: 4px;
-        overflow: hidden;
-        margin-bottom: 6px;
-    }
-    .card-img-container img {
-        max-height: 100%;
-        max-width: 100%;
-        object-fit: contain;
-    }
-    .card-nombre {
-        font-weight: bold;
-        font-size: 11px;
-        color: #111;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        margin-bottom: 2px;
-    }
-    .card-marca {
-        color: #0066cc;
-        font-size: 10px;
-        margin-bottom: 2px;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
-    .card-stock {
-        color: #555;
-        font-size: 10px;
-        margin-bottom: 4px;
-    }
-    .card-precio {
-        font-weight: bold;
-        color: #550055;
-        font-size: 12px;
-        text-align: right;
-    }
-    </style>
-""",
-    unsafe_allow_html=True,
 )
 
 st.title("🛍️ Catálogo de Productos Disponibles")
@@ -146,38 +77,35 @@ else:
   st.write(f"Mostrando **{len(productos)}** productos disponibles.")
   st.divider()
 
-  # Generamos la cuadrícula adaptativa para PC y celulares
-  html_code = "<div class='grid-catalogo'>"
+  # Mantenemos las 8 columnas estables en PC
+  NUMERO_COLUMNAS = 8
+  columnas = st.columns(NUMERO_COLUMNAS)
 
-  for p in productos:
+  for idx, p in enumerate(productos):
     codigo, nombre, marca, categoria, precio, stock, detalles, imagen_blob = p
+    columna_actual = columnas[idx % NUMERO_COLUMNAS]
 
-    img_tag = "<div style='color: #888; font-size: 20px;'>📷</div>"
-    if imagen_blob:
-      try:
-        encoded = base64.b64encode(imagen_blob).decode("utf-8")
-        img_tag = f"<img src='data:image/jpeg;base64,{encoded}' alt='producto'>"
-      except Exception:
-        pass
+    with columna_actual:
+      with st.container(border=True):
+        if imagen_blob:
+          try:
+            img = Image.open(io.BytesIO(imagen_blob))
+            st.image(img, use_container_width=True)
+          except Exception:
+            st.info("📷")
+        else:
+          st.info("📷")
 
-    marca_texto = marca if marca else "S/M"
-    nombre_escaped = (
-        nombre.replace('"', "&quot;") if nombre else "Sin nombre"
-    )
+        # Textos compactos limpios
+        nombre_corto = (
+            (nombre[:22] + "..")
+            if nombre and len(nombre) > 22
+            else (nombre if nombre else "Sin nombre")
+        )
+        st.markdown(f"**{nombre_corto}**")
 
-    html_code += f"""
-        <div class='card-producto'>
-            <div class='card-img-container'>
-                {img_tag}
-            </div>
-            <div>
-                <div class='card-nombre' title='{nombre_escaped}'>{nombre_escaped}</div>
-                <div class='card-marca'>Marca: {marca_texto}</div>
-                <div class='card-stock'>Stock: {stock} unids.</div>
-            </div>
-            <div class='card-precio'>S/ {precio:.2f}</div>
-        </div>
-        """
+        marca_texto = marca if marca else "S/M"
+        st.caption(f"Marca: {marca_texto}")
+        st.caption(f"Stock: {stock} unids.")
 
-  html_code += "</div>"
-  st.markdown(html_code, unsafe_allow_html=True)
+        st.markdown(f"**💰 S/ {precio:.2f}**")
