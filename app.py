@@ -26,10 +26,10 @@ def cargar_catalogo(categoria_filtro="Todas", busqueda=""):
   conn = conectar_db()
   cur = conn.cursor()
   query = """
-         SELECT codigo, nombre, marca, categoria, precio, detalles, imagen 
-         FROM productos 
-         WHERE activo = 1 
-     """
+        SELECT codigo, nombre, marca, categoria, precio, detalles, imagen 
+        FROM productos 
+        WHERE activo = 1 
+    """
   params = []
   if categoria_filtro and categoria_filtro != "Todas":
     query += " AND categoria = ?"
@@ -99,7 +99,5 @@ else:
             f" {categoria}"
         )
         if detalles:
-          st.text(
-              detalles[:80] + "..." if len(detalles) > 80 else detalles
-          )
+          st.text(detalles[:80] + "..." if len(detalles) > 80 else detalles)
         st.markdown(f"### 💰 S/ {precio:.2f}")
